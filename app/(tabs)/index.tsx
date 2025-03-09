@@ -7,6 +7,8 @@ const sounds = {
   sound2: require('../../assets/sounds/sound2.mp3'),
   sound3: require('../../assets/sounds/sound3.mp3'),
   sound4: require('../../assets/sounds/sound4.mp3'),
+  sound5: require('../../assets/sounds/sound5.mp3'),
+  sound6: require('../../assets/sounds/sound6.mp3'),
 };
 
 export default function App() {
@@ -27,6 +29,8 @@ export default function App() {
       <Button title="Play Sound 2" onPress={() => playSound(sounds.sound2)} />
       <Button title="Play Sound 3" onPress={() => playSound(sounds.sound3)} />
       <Button title="Play Sound 4" onPress={() => playSound(sounds.sound4)} />
+      <Button title="Play Sound 5" onPress={() => playSound(sounds.sound5)} />
+      <Button title="Play Sound 6" onPress={() => playSound(sounds.sound6)} />      
     </View>
   );
 }
