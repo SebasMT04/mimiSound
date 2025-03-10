@@ -1,93 +1,135 @@
 import { Audio } from 'expo-av';
 import { useState } from 'react';
-import { View, TouchableOpacity, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Pressable, Text, FlatList, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
+import { MaterialIcons } from '@expo/vector-icons';
+
+const numColumns = 3;
+const screenWidth = Dimensions.get('window').width;
+const buttonWidth = (screenWidth - 40) / numColumns - 10;
 
 export default function App() {
   const [sound, setSound] = useState();
+  const [customSoundCount, setCustomSoundCount] = useState(0);
   const [sounds, setSounds] = useState([
-    { id: '1', file: require('../../assets/sounds/sound1.mp3'), label: 'Sound 1' },
-    { id: '2', file: require('../../assets/sounds/sound2.mp3'), label: 'Sound 2' },
-    { id: '3', file: require('../../assets/sounds/sound3.mp3'), label: 'Sound 3' },
-    { id: '4', file: require('../../assets/sounds/sound4.mp3'), label: 'Sound 4' },
-    { id: '5', file: require('../../assets/sounds/sound5.mp3'), label: 'Sound 5' },
-    { id: '6', file: require('../../assets/sounds/sound6.mp3'), label: 'Sound 6' },
-    { id: '7', file: require('../../assets/sounds/sound7.mp3'), label: 'Sound 7' },
-    { id: '8', file: require('../../assets/sounds/sound8.mp3'), label: 'Sound 8' },
-    { id: '9', file: require('../../assets/sounds/sound9.mp3'), label: 'Sound 9' },
-    { id: '10', file: require('../../assets/sounds/sound10.mp3'), label: 'Sound 10' },
-    { id: '11', file: require('../../assets/sounds/sound11.mp3'), label: 'Sound 11' },
-    { id: '12', file: require('../../assets/sounds/sound12.mp3'), label: 'Sound 12' },
-    { id: '13', file: require('../../assets/sounds/sound13.mp3'), label: 'Sound 13' },
+    { id: '1', file: require('../../assets/sounds/sound1.mp3'), label: 'Sound 1', isCustom: false },
+    { id: '2', file: require('../../assets/sounds/sound2.mp3'), label: 'Sound 2', isCustom: false },
+    { id: '3', file: require('../../assets/sounds/sound3.mp3'), label: 'Sound 3', isCustom: false },
   ]);
 
   async function playSound(soundFile) {
+    if (!soundFile) return;
+
     if (sound) {
       await sound.unloadAsync();
     }
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      typeof soundFile === 'string' ? { uri: soundFile } : soundFile
-    );
-    setSound(newSound);
-    await newSound.playAsync();
+
+    const source = typeof soundFile === 'string' ? { uri: soundFile } : soundFile;
+
+    try {
+      const { sound: newSound } = await Audio.Sound.createAsync(source);
+      setSound(newSound);
+      await newSound.playAsync();
+    } catch (error) {
+      console.error('Error al reproducir el sonido:', error);
+    }
   }
 
   async function pickAudio() {
-    const result = await DocumentPicker.getDocumentAsync({ type: 'audio/*' });
-    if (result.canceled) return;
+    try {
+      const result = await DocumentPicker.getDocumentAsync({ type: 'audio/*' });
 
-    const newSound = { id: Date.now().toString(), file: result.uri, label: result.name };
-    setSounds((prevSounds) => [...prevSounds, newSound]);
+      if (!result || !result.assets || result.assets.length === 0) return;
+
+      const newCustomSoundCount = customSoundCount + 1;
+
+      const newSound = {
+        id: Date.now().toString(),
+        file: result.assets[0].uri,
+        label: `Custom Sound ${newCustomSoundCount}`,
+        isCustom: true,
+      };
+
+      setSounds((prevSounds) => [...prevSounds, newSound]);
+      setCustomSoundCount(newCustomSoundCount);
+    } catch (error) {
+      console.error('Error al seleccionar el archivo:', error);
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={sounds}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.button} onPress={() => playSound(item.file)}>
-            <Text style={styles.buttonText}>{item.label}</Text>
-          </TouchableOpacity>
-        )}
-      />
-      <TouchableOpacity style={styles.uploadButton} onPress={pickAudio}>
-        <Text style={styles.buttonText}>Upload Sound</Text>
-      </TouchableOpacity>
-    </View>
+    //<ImageBackground source={require('../../assets/background.jpg')} style={styles.background}>
+    //aqui se puede poner una imagen de fondo pero no se cual
+
+      <View style={styles.container}>
+        <FlatList
+          data={sounds}
+          keyExtractor={(item) => item.id}
+          numColumns={numColumns}
+          columnWrapperStyle={styles.row}
+          renderItem={({ item }) => (
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                { width: buttonWidth, backgroundColor: item.isCustom ? '#ff9800' : '#4CAF50' },
+                pressed && { opacity: 0.7 },
+              ]}
+              onPress={() => playSound(item.file)}
+            >
+              <MaterialIcons name="audiotrack" size={24} color="white" />
+              <Text style={styles.buttonText}>{item.label}</Text>
+            </Pressable>
+          )}
+        />
+        <Pressable style={styles.uploadButton} onPress={pickAudio}>
+          <MaterialIcons name="file-upload" size={24} color="white" />
+          <Text style={styles.buttonText}>Upload Sound</Text>
+        </Pressable>
+      </View>
+    //</ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
-    padding: 20,
+    padding: 10,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: '#6200ea',
-    padding: 15,
-    margin: 10,
+    paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
-    width: 130,
+    justifyContent: 'center',
     elevation: 5,
+    flexDirection: 'row',
+    gap: 5,
+    paddingHorizontal: 10,
   },
   uploadButton: {
-    backgroundColor: '#03dac6',
+    backgroundColor: '#2196F3',
     padding: 15,
     marginTop: 20,
     borderRadius: 10,
     alignItems: 'center',
     width: 200,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 5,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
