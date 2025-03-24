@@ -4,9 +4,9 @@ import { View, Pressable, Text, FlatList, StyleSheet, Dimensions, ImageBackgroun
 import * as DocumentPicker from 'expo-document-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const numColumns = 3;
+const numColumns = 5;
 const screenWidth = Dimensions.get('window').width;
-const buttonWidth = (screenWidth - 40) / numColumns - 10;
+const buttonWidth = (screenWidth - 100) / numColumns - 10;
 
 export default function App() {
   const [sound, setSound] = useState();
@@ -15,6 +15,18 @@ export default function App() {
     { id: '1', file: require('../../assets/sounds/sound1.mp3'), label: 'Sound 1', isCustom: false },
     { id: '2', file: require('../../assets/sounds/sound2.mp3'), label: 'Sound 2', isCustom: false },
     { id: '3', file: require('../../assets/sounds/sound3.mp3'), label: 'Sound 3', isCustom: false },
+    { id: '4', file: require('../../assets/sounds/sound4.mp3'), label: 'Sound 4', isCustom: false },
+    { id: '5', file: require('../../assets/sounds/sound5.mp3'), label: 'Sound 5', isCustom: false },
+    { id: '6', file: require('../../assets/sounds/sound6.mp3'), label: 'Sound 6', isCustom: false },
+    { id: '7', file: require('../../assets/sounds/sound7.mp3'), label: 'Sound 7', isCustom: false },
+    { id: '8', file: require('../../assets/sounds/sound8.mp3'), label: 'Sound 8', isCustom: false },
+    { id: '9', file: require('../../assets/sounds/sound9.mp3'), label: 'Sound 9', isCustom: false },
+    { id: '10', file: require('../../assets/sounds/sound10.mp3'), label: 'Sound 10', isCustom: false },
+    { id: '11', file: require('../../assets/sounds/sound11.mp3'), label: 'Sound 11', isCustom: false },
+    { id: '12', file: require('../../assets/sounds/sound12.mp3'), label: 'Sound 12', isCustom: false },
+    { id: '13', file: require('../../assets/sounds/sound13.mp3'), label: 'Sound 13', isCustom: false },
+    { id: '14', file: require('../../assets/sounds/sound14.mp3'), label: 'Sound 14', isCustom: false },
+    { id: '15', file: require('../../assets/sounds/sound15.mp3'), label: 'Sound 15', isCustom: false },
   ]);
 
   async function playSound(soundFile) {
@@ -58,8 +70,7 @@ export default function App() {
   }
 
   return (
-    //<ImageBackground source={require('../../assets/background.jpg')} style={styles.background}>
-    //aqui se puede poner una imagen de fondo pero no se cual
+    //<ImageBackground source={require('../../assets/images/background.jpg')} style={styles.background}>
 
       <View style={styles.container}>
         <FlatList
@@ -103,17 +114,18 @@ const styles = StyleSheet.create({
   },
   row: {
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 10, 
   },
   button: {
-    paddingVertical: 15,
+    width: 80, 
+    height: 70, 
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 5,
-    flexDirection: 'row',
-    gap: 5,
-    paddingHorizontal: 10,
+    flexDirection: 'column',
+    marginHorizontal: 5,
+    marginBottom: 10, 
   },
   uploadButton: {
     backgroundColor: '#2196F3',
@@ -127,9 +139,9 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   buttonText: {
-    color: 'white',
-    fontSize: 14,
+    fontSize: 12, 
     fontWeight: 'bold',
     textAlign: 'center',
+    color: 'white',
   },
 });
